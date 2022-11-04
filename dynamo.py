@@ -100,7 +100,7 @@ class Dynamo:
 
             return {
                 "statusCode": 500,
-                "body": json.dumps({"message": "Unable to get approved items"}),
+                "body": json.dumps({"message": "Unable to get active items"}),
             }
 
     def dynamo_post(self, data):
@@ -123,7 +123,7 @@ class Dynamo:
 
             return {
                 "statusCode": 500,
-                "body": json.dumps({"message": "Unable to PUT items."}),
+                "body": json.dumps({"message": "Unable to POST items."}),
             }
 
     def dynamo_get_item(self, uid):
