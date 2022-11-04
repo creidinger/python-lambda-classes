@@ -41,7 +41,7 @@ class Dynamo:
             # get all items
             items = self.table.scan()
             self.logger.info(f'Dynamo.dynamo_get_all: success')
-            return(items)
+            return(items.get('Items'))
 
         except Exception as e:
             # display failure message and return failure status
@@ -52,25 +52,51 @@ class Dynamo:
                 "body": json.dumps({"message": "Unable to get items"}),
             }
 
-    def dynamo_get_all_by_status(self, status):
+    def dynamo_filter_by_status(self, status):
         """
         Get all items with the provided status.
         args:
             - status (str): The status we're filtering for
         """
 
-        self.logger.info(f'Dynamo.dynamo_get_all_by_status: status {status}')
+        self.logger.info(f'Dynamo.dynamo_filter_by_status: status {status}')
 
         try:
             # get all items
             items = self.table.scan(FilterExpression=Attr('status').eq(status))
-            self.logger.info(f'Dynamo.dynamo_get_all_by_status: success')
-            return(items)
+            self.logger.info(f'Dynamo.dynamo_filter_by_status: success')
+            return(items.get('Items'))
 
         except Exception as e:
             # display failure message and return failure status
             self.logger.error(
-                f'Dynamo.dynamo_get_all_by_status: failed...\n\n\n {e}')
+                f'Dynamo.dynamo_filter_by_status: failed...\n\n\n {e}')
+
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"message": "Unable to get approved items"}),
+            }
+
+    def dynamo_filter_exclude_status(self, status):
+        """
+        Get all items without the provided status.
+        args:
+            - status (str): The status we're filtering for
+        """
+
+        self.logger.info(
+            f'Dynamo.dynamo_filter_exclude_status: status {status}')
+
+        try:
+            # get all items
+            items = self.table.scan(FilterExpression=Attr('status').ne(status))
+            self.logger.info(f'Dynamo.dynamo_filter_exclude_status: success')
+            return(items.get('Items'))
+
+        except Exception as e:
+            # display failure message and return failure status
+            self.logger.error(
+                f'Dynamo.dynamo_filter_exclude_status: failed...\n\n\n {e}')
 
             return {
                 "statusCode": 500,
@@ -112,7 +138,7 @@ class Dynamo:
         try:
             item = self.table.get_item(Key={'uid': uid})
             self.logger.info('Dynamo.dynamo_get_item: end.')
-            return item
+            return(item.get('Item'))
 
         except Exception as e:
             self.logger.error(
