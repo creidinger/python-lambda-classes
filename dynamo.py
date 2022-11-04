@@ -153,7 +153,7 @@ class Dynamo:
 
     def dynamo_put_item(self, data):
         """
-        Upload data to DynamoDb
+        Upload Item to DynamoDb
         args:
             - data (json): the data received by the lambda function
         """
@@ -177,7 +177,7 @@ class Dynamo:
 
     def dynamo_delete_item(self, uid):
         """
-        Upload data to DynamoDb
+        Delete Item from DynamoDb
         args:
             - uid (str): The ID of the item we're looking for
         """
