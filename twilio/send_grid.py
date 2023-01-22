@@ -66,7 +66,7 @@ class SendGrid():
             self.logger.error(f"SendGrid.set_email_receivers: {e}")
             return {
                 "statusCode": 500,
-                "body": json.dumps({"message": "Unable to set sender email"}),
+                "body": json.dumps({"message": "Unable to set email receivers"}),
             }
 
         return {
