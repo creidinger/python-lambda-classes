@@ -7,10 +7,7 @@ import paramiko
 
 
 class MerkleSftp():
-    """This is an interface for the Legacy API created by Palury
-
-    We will be pulling this API apart until it is no longer in use. 
-    """
+    """This is an interface for the FPT with Merkle"""
 
     def __init__(self, logger, stage, data):
         """
