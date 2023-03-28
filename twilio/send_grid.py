@@ -20,7 +20,7 @@ class SendGrid():
             - to_emails (str): a comma separated list of email addresses
         """
 
-        self.logger = logger
+        self.__logger = logger
         self.from_email = from_email
         self.to_emails = to_emails
 
@@ -31,14 +31,14 @@ class SendGrid():
             email_address (str): The email of address of the sender
         """
 
-        self.logger.info("SendGrid.set_email_sender: start")
+        self.__logger.info("SendGrid.set_email_sender: start")
 
         try:
             self.from_email = email_address
-            self.logger.info("SendGrid.set_email_sender: success")
+            self.__logger.info("SendGrid.set_email_sender: success")
 
         except Exception as e:
-            self.logger.error(f"SendGrid.set_email_sender: {e}")
+            self.__logger.error(f"SendGrid.set_email_sender: {e}")
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to set sender email"}),
@@ -56,14 +56,14 @@ class SendGrid():
             email_addresses (str): a comma separated list of email addresses
         """
 
-        self.logger.info("SendGrid.set_email_receivers: start")
+        self.__logger.info("SendGrid.set_email_receivers: start")
 
         try:
             self.to_emails = email_addresses
-            self.logger.info("SendGrid.set_email_receivers: success")
+            self.__logger.info("SendGrid.set_email_receivers: success")
 
         except Exception as e:
-            self.logger.error(f"SendGrid.set_email_receivers: {e}")
+            self.__logger.error(f"SendGrid.set_email_receivers: {e}")
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to set email receivers"}),
@@ -82,7 +82,7 @@ class SendGrid():
             message_body (str): The email message we're looking to send
         """
 
-        self.logger.info("SendGrid.send_email: start")
+        self.__logger.info("SendGrid.send_email: start")
 
         # create mail object
         message = Mail(
@@ -95,15 +95,15 @@ class SendGrid():
             # try to send email
             sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
             response = sg.send(message)
-            self.logger.info(
+            self.__logger.info(
                 f"SendGrid.send_email - response.status_code: {response.status_code}")
-            self.logger.info(
+            self.__logger.info(
                 f"SendGrid.send_email - response.body: {response.body}")
-            self.logger.info(
+            self.__logger.info(
                 f"SendGrid.send_email - response.headers: {response.headers}")
 
         except Exception as e:
-            self.logger.error(f"SendGrid.send_email: {e}")
+            self.__logger.error(f"SendGrid.send_email: {e}")
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to send email"}),

@@ -19,7 +19,7 @@ class SimpleEmailService:
         self.region_name = "us-east-1"  # default value
         self.charset = 'UTF-8'  # default value
         self.client = boto3.client("ses", region_name=self.region_name)
-        self.logger = logger
+        self.__logger = logger
         self.receiver = os.environ["email_receiver_dev"]
         self.email_subject = os.environ["email_subject_test"]
         self.email_from_name = os.environ["email_from_name"]
@@ -32,11 +32,11 @@ class SimpleEmailService:
             region_name (str): The region we want to change too
         """
 
-        self.logger.info('SimpleEmailService.set_region: start')
+        self.__logger.info('SimpleEmailService.set_region: start')
 
         self.region_name = region_name
 
-        self.logger.info(
+        self.__logger.info(
             f'SimpleEmailService.set_region: end - using region {self.region_name}')
 
     def set_charset(self, charset):
@@ -45,11 +45,11 @@ class SimpleEmailService:
         Args:
             charset (str): The charset that will be used to send the email
         """
-        self.logger.info('SimpleEmailService.set_charset: start')
+        self.__logger.info('SimpleEmailService.set_charset: start')
 
         self.charset = charset
 
-        self.logger.info(
+        self.__logger.info(
             f'SimpleEmailService.set_charset: end - using charset {self.charset}')
 
     def set_email_meta(self, stage):
@@ -59,32 +59,33 @@ class SimpleEmailService:
             stage (str): the API environemnt we're using to detect dev, staging, and prod.
         """
 
-        self.logger.info("SimpleEmailService.set_email_meta: start...")
+        self.__logger.info("SimpleEmailService.set_email_meta: start...")
 
-        self.logger.info(
+        self.__logger.info(
             f'SimpleEmailService.set_email_meta: Dev Env is default.')
 
-        self.logger.info(
+        self.__logger.info(
             f'SimpleEmailService.set_email_meta: Checking staging or production')
 
         # determine which person to send the email to
         if stage == "v1":
-            self.logger.info(f'SimpleEmailService.set_email_meta: Using Prod')
+            self.__logger.info(
+                f'SimpleEmailService.set_email_meta: Using Prod')
             self.receiver = os.environ["email_receiver_prod"]
             self.email_subject = os.environ["email_subject_prod"]
 
         if stage == "stage":
-            self.logger.info(
+            self.__logger.info(
                 f'SimpleEmailService.set_email_meta: Using staging')
             self.receiver = os.environ["email_receiver_staging"]
             self.email_subject = os.environ["email_subject_test"]
 
-        self.logger.info(
+        self.__logger.info(
             f'SimpleEmailService.set_email_meta: receiver: {self.receiver}')
-        self.logger.info(
+        self.__logger.info(
             f'SimpleEmailService.set_email_meta: email_subject: {self.email_subject}')
 
-        self.logger.info("SimpleEmailService.set_email_meta: end...")
+        self.__logger.info("SimpleEmailService.set_email_meta: end...")
 
     def send_email(self, message_body):
         """Send email to client and information of a
@@ -94,7 +95,7 @@ class SimpleEmailService:
         Args:
             message_body(str): The body of the email that will be sent
         """
-        self.logger.info("SimpleEmailService.send_email: start")
+        self.__logger.info("SimpleEmailService.send_email: start")
 
         try:
             # send email
@@ -118,13 +119,13 @@ class SimpleEmailService:
                 },
                 Source=f'{self.email_from_name} <{self.sender}>',
             )
-            self.logger.info("SimpleEmailService.send_email: success!")
+            self.__logger.info("SimpleEmailService.send_email: success!")
 
         except Exception as e:
-            self.logger.error(
+            self.__logger.error(
                 "SimpleEmailService.send_email: unable to send eamil")
-            self.logger.error(f"SimpleEmailService.send_email: {e}")
+            self.__logger.error(f"SimpleEmailService.send_email: {e}")
             return False
 
-        self.logger.info("SimpleEmailService.send_email: end")
+        self.__logger.info("SimpleEmailService.send_email: end")
         return True

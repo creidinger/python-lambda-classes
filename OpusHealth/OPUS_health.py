@@ -14,7 +14,7 @@ class OpusHealthPartnerInterface:
         Args:
             - logger (obj): import logger object using the singleton pattern
         """
-        self.logger = logger
+        self.__logger = logger
         self.headers = {
             "Content-Type": "text/xml;charset=utf-8",
             "Accept-Encoding": "gzip,deflate"
@@ -42,7 +42,7 @@ class OpusHealthPartnerInterface:
             self.groupid = groupid
 
         except Exception as e:
-            self.logger.error(f"OpusHealthPartnerInterface.set_meta: {e}")
+            self.__logger.error(f"OpusHealthPartnerInterface.set_meta: {e}")
             return False
 
         return True
@@ -66,7 +66,7 @@ class OpusHealthPartnerInterface:
         </soapenv:Body>
     </soapenv:Envelope>"""
 
-        self.logger.info(
+        self.__logger.info(
             f'OpusHealthPartnerInterface.set_payload: xmldata: {self.payload}')
 
     def post_request(self):
@@ -81,11 +81,11 @@ class OpusHealthPartnerInterface:
         try:
             r = requests.post(
                 self.url, data=self.payload, headers=self.headers)
-            self.logger.info(
+            self.__logger.info(
                 f'OpusHealthPartnerInterface.post_request: API response status code: {r.status_code}')
 
         except Exception as e:
-            self.logger.error(
+            self.__logger.error(
                 f'OpusHealthPartnerInterface.post_request: API failed: \n\n {e}')
 
         return r
@@ -100,7 +100,7 @@ class OpusHealthPartnerInterface:
         # convert response xml to dict
         xml_response = xmltodict.parse(xml_str)
 
-        self.logger.info(
+        self.__logger.info(
             f'OpusHealthPartnerInterface.get_document_number: xml_response \n{json.dumps(xml_response, indent=4)}')
 
         # get the document number

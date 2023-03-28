@@ -27,7 +27,7 @@ class Marketo():
         self.list_id = os.environ["list_id"]
         self.mc = MarketoClient(self.munchkin_id, self.client_id,
                                 self.client_secret, self.api_limit, self.max_retry_time)
-        self.logger = logger
+        self.__logger = logger
 
     def create_lead(self, data):
         """Upload a contact as a lead into the Marketo DB
@@ -38,7 +38,7 @@ class Marketo():
             - Duplicate: [{'status': 'skipped', 'reasons': [{'code': '1005', 'message': 'Lead already exists'}]}]
         """
 
-        self.logger.info('Marketo.create_lead: Start...')
+        self.__logger.info('Marketo.create_lead: Start...')
 
         email = data["email"]
         first_name = data["first_name"]
@@ -53,12 +53,12 @@ class Marketo():
             response = self.mc.execute(method='create_update_leads', leads=leads, action='createOnly', lookupField='email',
                                        asyncProcessing='false', partitionName='Default')
         except Exception as e:
-            self.logger.info('Marketo.create_lead: failed')
-            self.logger.info(f'Marketo.create_lead: {e}')
+            self.__logger.info('Marketo.create_lead: failed')
+            self.__logger.info(f'Marketo.create_lead: {e}')
             return None
 
-        self.logger.info('Marketo.create_lead: Success!')
-        self.logger.info(f'Marketo.create_lead: {response}')
+        self.__logger.info('Marketo.create_lead: Success!')
+        self.__logger.info(f'Marketo.create_lead: {response}')
         return response
 
     def add_to_list(self, lead_id):
@@ -70,17 +70,17 @@ class Marketo():
             - Failed: {'message': 'For input string: "ST1139B2LA1" failed to convert to a number', 'code': '1001'}
         """
 
-        self.logger.info('Marketo.add_to_list: Start...')
+        self.__logger.info('Marketo.add_to_list: Start...')
 
         try:
             # Try to add lead to a list
             response = self.mc.execute(
                 method='add_leads_to_list', listId=self.list_id, id=[lead_id])
         except Exception as e:
-            self.logger.error('Marketo.add_to_list: failed')
-            self.logger.error(f'Marketo.add_to_list: {e}')
+            self.__logger.error('Marketo.add_to_list: failed')
+            self.__logger.error(f'Marketo.add_to_list: {e}')
             return None
 
-        self.logger.info('Marketo.add_to_list: Success!')
-        self.logger.info(f'Marketo.add_to_list: {response}')
+        self.__logger.info('Marketo.add_to_list: Success!')
+        self.__logger.info(f'Marketo.add_to_list: {response}')
         return response

@@ -16,7 +16,7 @@ class S3:
         Args:
             - logger (obj): import logger object using the singleton pattern
         """
-        self.logger = logger
+        self.__logger = logger
         self.region_name = "us-east-1"  # default value
         self.client = None
 
@@ -27,11 +27,11 @@ class S3:
             - region_name (str): The region we want to change too
         """
 
-        self.logger.info('S3.set_region: start')
+        self.__logger.info('S3.set_region: start')
 
         self.region_name = region_name
 
-        self.logger.info(
+        self.__logger.info(
             f'S3.set_region: end - using region {self.region_name}')
 
     def set_s3_client(self, ACCESS_KEY, SECRET):
@@ -42,16 +42,16 @@ class S3:
             SECRET (str): The secret key for this bucket
         """
 
-        self.logger.info('S3.set_s3_client: start')
+        self.__logger.info('S3.set_s3_client: start')
 
         try:
             self.client = boto3.client(
                 's3', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET)
 
         except Exception as e:
-            self.logger.error(f'S3.set_s3_client: {e}')
+            self.__logger.error(f'S3.set_s3_client: {e}')
 
-        self.logger.info('S3.set_s3_client: end')
+        self.__logger.info('S3.set_s3_client: end')
 
     def upload_to_butcket(self, file_name, bucket, object_name):
         """Upload an object to a bucket
@@ -65,16 +65,16 @@ class S3:
             - object_name (str): S3 object name.
         """
 
-        self.logger.info("S3.upload_to_butcket: start...")
+        self.__logger.info("S3.upload_to_butcket: start...")
 
         try:
             response = self.client.upload_file(file_name, bucket, object_name)
 
         except ClientError as e:
-            self.logger.error(
+            self.__logger.error(
                 f'upload_to_s3: S3 upload failed \n{e}')
-            self.logger.error('upload_to_s3: Exit')
+            self.__logger.error('upload_to_s3: Exit')
             return False
 
-        self.logger.info("S3.upload_to_butcket: Success - end...")
+        self.__logger.info("S3.upload_to_butcket: Success - end...")
         return True

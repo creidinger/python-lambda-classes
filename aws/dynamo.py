@@ -20,7 +20,7 @@ class Dynamo:
         self.client = boto3.resource(
             'dynamodb')
         self.table = None
-        self.logger = logger
+        self.__logger = logger
 
     def set_table(self, table_name):
         """ Set the table that we want to work with
@@ -35,17 +35,17 @@ class Dynamo:
         Get all items from the DB.
         """
 
-        self.logger.info('Dynamo.dynamo_get_all: start')
+        self.__logger.info('Dynamo.dynamo_get_all: start')
 
         try:
             # get all items
             items = self.table.scan()
-            self.logger.info(f'Dynamo.dynamo_get_all: success')
-            return(items.get('Items'))
+            self.__logger.info(f'Dynamo.dynamo_get_all: success')
+            return (items.get('Items'))
 
         except Exception as e:
             # display failure message and return failure status
-            self.logger.error(f'Dynamo.dynamo_get_all: failed...\n\n\n {e}')
+            self.__logger.error(f'Dynamo.dynamo_get_all: failed...\n\n\n {e}')
 
             return {
                 "statusCode": 500,
@@ -59,17 +59,17 @@ class Dynamo:
             - status (str): The status we're filtering for
         """
 
-        self.logger.info(f'Dynamo.dynamo_filter_by_status: status {status}')
+        self.__logger.info(f'Dynamo.dynamo_filter_by_status: status {status}')
 
         try:
             # get all items
             items = self.table.scan(FilterExpression=Attr('status').eq(status))
-            self.logger.info(f'Dynamo.dynamo_filter_by_status: success')
-            return(items.get('Items'))
+            self.__logger.info(f'Dynamo.dynamo_filter_by_status: success')
+            return (items.get('Items'))
 
         except Exception as e:
             # display failure message and return failure status
-            self.logger.error(
+            self.__logger.error(
                 f'Dynamo.dynamo_filter_by_status: failed...\n\n\n {e}')
 
             return {
@@ -84,18 +84,18 @@ class Dynamo:
             - status (str): The status we're filtering for
         """
 
-        self.logger.info(
+        self.__logger.info(
             f'Dynamo.dynamo_filter_exclude_status: status {status}')
 
         try:
             # get all items
             items = self.table.scan(FilterExpression=Attr('status').ne(status))
-            self.logger.info(f'Dynamo.dynamo_filter_exclude_status: success')
-            return(items.get('Items'))
+            self.__logger.info(f'Dynamo.dynamo_filter_exclude_status: success')
+            return (items.get('Items'))
 
         except Exception as e:
             # display failure message and return failure status
-            self.logger.error(
+            self.__logger.error(
                 f'Dynamo.dynamo_filter_exclude_status: failed...\n\n\n {e}')
 
             return {
@@ -110,16 +110,16 @@ class Dynamo:
             - data (json): the item we're adding to the db
         """
 
-        self.logger.info('Dynamo.dynamo_post: start')
+        self.__logger.info('Dynamo.dynamo_post: start')
 
         try:
             item = self.table.put_item(Item=data)
-            self.logger.info(f'Dynamo.dynamo_post: success')
-            return(item)
+            self.__logger.info(f'Dynamo.dynamo_post: success')
+            return (item)
 
         except Exception as e:
             # display failure message and return failure status
-            self.logger.error(f'Dynamo.dynamo_post: failed...\n\n\n {e}')
+            self.__logger.error(f'Dynamo.dynamo_post: failed...\n\n\n {e}')
 
             return {
                 "statusCode": 500,
@@ -133,15 +133,15 @@ class Dynamo:
             - uid (str): The ID of the item we're looking for
         """
 
-        self.logger.info('Dynamo.dynamo_get_item: start')
+        self.__logger.info('Dynamo.dynamo_get_item: start')
 
         try:
             item = self.table.get_item(Key={'uid': uid})
-            self.logger.info('Dynamo.dynamo_get_item: end.')
-            return(item.get('Item'))
+            self.__logger.info('Dynamo.dynamo_get_item: end.')
+            return (item.get('Item'))
 
         except Exception as e:
-            self.logger.error(
+            self.__logger.error(
                 f'Dynamo.dynamo_get_item: Unable to table.get_item() \n\n\n{e}')
 
             # return empty if error
@@ -157,18 +157,18 @@ class Dynamo:
         args:
             - data (json): the data received by the lambda function
         """
-        self.logger.info('Dynamo.dynamo_put_item: start')
+        self.__logger.info('Dynamo.dynamo_put_item: start')
 
         # create a new item (row)
         # source: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html#creating-a-new-item
 
         try:
             item = self.table.put_item(Item=data)
-            self.logger.info(f'Dynamo.dynamo_put_item: success')
-            return(item)
+            self.__logger.info(f'Dynamo.dynamo_put_item: success')
+            return (item)
 
         except Exception as e:
-            self.logger.error(
+            self.__logger.error(
                 f'Dynamo.dynamo_put_item: dynamodb.table.put_item: {json.dumps(e, indent=4)}')
             return {
                 "statusCode": 500,
@@ -181,18 +181,18 @@ class Dynamo:
         args:
             - uid (str): The ID of the item we're looking for
         """
-        self.logger.info('Dynamo.dynamo_delete_item: start')
+        self.__logger.info('Dynamo.dynamo_delete_item: start')
 
         # create a new item (row)
         # source: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html#creating-a-new-item
 
         try:
             item = self.table.delete_item(Key={'uid': uid})
-            self.logger.info(f'Dynamo.dynamo_delete_item: success')
-            return(item)
+            self.__logger.info(f'Dynamo.dynamo_delete_item: success')
+            return (item)
 
         except Exception as e:
-            self.logger.error(
+            self.__logger.error(
                 f'Dynamo.dynamo_delete_item: dynamodb.table.put_item: {json.dumps(e, indent=4)}')
             return {
                 "statusCode": 500,

@@ -14,7 +14,7 @@ class Epsilon:
             apikey (str): The api key for the Epsilon API
         """
 
-        self.logger = logger
+        self.__logger = logger
         self.api_region = api_region
         # private variables
         self.__api_key = api_key
@@ -29,7 +29,7 @@ class Epsilon:
         `registration_token` from the `accoutns.initRegiration` endpoint.
         """
 
-        self.logger.info('Epsilon.set_registration_token: start')
+        self.__logger.info('Epsilon.set_registration_token: start')
 
         endpoint = f'{self.api_region}/accounts.initRegistration'
 
@@ -43,28 +43,28 @@ class Epsilon:
 
         except Exception as e:
             # critical lambda failture
-            self.logger.error('Epsilon.set_registration_token: failed!!!')
-            self.logger.error(
+            self.__logger.error('Epsilon.set_registration_token: failed!!!')
+            self.__logger.error(
                 f'Epsilon.set_registration_token: endpoint: {endpoint}')
-            self.logger.error(
+            self.__logger.error(
                 f'Epsilon.set_registration_token: params: {params}')
-            self.logger.error(f'Epsilon.set_registration_token: {e}')
+            self.__logger.error(f'Epsilon.set_registration_token: {e}')
 
             return False
 
         # if the request is 400 or greater,
         # return an error
         if not r.ok:
-            self.logger.error('Epsilon.set_registration_token: failed!!!')
-            self.logger.error(
+            self.__logger.error('Epsilon.set_registration_token: failed!!!')
+            self.__logger.error(
                 f'Epsilon.set_registration_token: endpoint: {endpoint}')
-            self.logger.error(
+            self.__logger.error(
                 f'Epsilon.set_registration_token: params: {params}')
-            self.logger.error(f'Epsilon.set_registration_token: {r.text}')
+            self.__logger.error(f'Epsilon.set_registration_token: {r.text}')
 
             return False
 
-        self.logger.info(
+        self.__logger.info(
             f'Epsilon.set_registration_token: response: \n{json.dumps(r.json(), indent=4)}')
 
         # get the token from the response
@@ -73,10 +73,10 @@ class Epsilon:
         # set the token
         self.__registration_token = resp_dict["regToken"]
 
-        self.logger.info(
+        self.__logger.info(
             f'Epsilon.set_registration_token: token Set: {self.__registration_token}')
 
-        self.logger.info('Epsilon.set_registration_token: Success')
+        self.__logger.info('Epsilon.set_registration_token: Success')
 
         return True
 
@@ -87,7 +87,7 @@ class Epsilon:
             data (obj): The payload received from the lambda event
         """
 
-        self.logger.info('Epsilon.post_registration: start')
+        self.__logger.info('Epsilon.post_registration: start')
 
         # buid parameters
         self.build_profile_param(data=data)
@@ -106,31 +106,31 @@ class Epsilon:
 
         except Exception as e:
             # critical lambda failture
-            self.logger.error('Epsilon.post_registration: failed!!!')
-            self.logger.error(
+            self.__logger.error('Epsilon.post_registration: failed!!!')
+            self.__logger.error(
                 f'Epsilon.post_registration: endpoint: {endpoint}')
-            self.logger.error(
+            self.__logger.error(
                 f'Epsilon.post_registration: params: {params}')
-            self.logger.error(f'Epsilon.post_registration: {e}')
+            self.__logger.error(f'Epsilon.post_registration: {e}')
 
             return False
 
         # if the request is 400 or greater,
         # return an error
         if not r.ok:
-            self.logger.error('Epsilon.post_registration: failed!!!')
-            self.logger.error(
+            self.__logger.error('Epsilon.post_registration: failed!!!')
+            self.__logger.error(
                 f'Epsilon.post_registration: endpoint: {endpoint}')
-            self.logger.error(
+            self.__logger.error(
                 f'Epsilon.post_registration: params: {params}')
-            self.logger.error(f'Epsilon.post_registration: {r.text}')
+            self.__logger.error(f'Epsilon.post_registration: {r.text}')
 
             return False
 
-        self.logger.info(
+        self.__logger.info(
             f'Epsilon.post_registration: response: \n{json.dumps(r.json(), indent=4)}')
 
-        self.logger.info('Epsilon.post_registration: end')
+        self.__logger.info('Epsilon.post_registration: end')
 
         return True
 
@@ -141,7 +141,7 @@ class Epsilon:
             data (obj): The payload received from the lambda event
         """
 
-        self.logger.info('Epsilon.build_profile_param: start')
+        self.__logger.info('Epsilon.build_profile_param: start')
 
         # fill out template
         profile = {
@@ -157,10 +157,10 @@ class Epsilon:
         # set the profile
         self.__profile_param = json.dumps(profile)
 
-        self.logger.info(
+        self.__logger.info(
             f'Epsilon.build_profile_param: profile:\n{self.__profile_param}')
 
-        self.logger.info('Epsilon.build_profile_param: end')
+        self.__logger.info('Epsilon.build_profile_param: end')
 
     def build_data_param(self, data):
         """Take the data from the event and create the `data` parameter.
@@ -169,7 +169,7 @@ class Epsilon:
             data (obj): The payload received from the lambda event
         """
 
-        self.logger.info('Epsilon.build_data_param: start')
+        self.__logger.info('Epsilon.build_data_param: start')
 
         # fill out template
         event_data = {
@@ -196,7 +196,7 @@ class Epsilon:
         # set the profile
         self.__data_param = json.dumps(event_data)
 
-        self.logger.info(
+        self.__logger.info(
             f'Epsilon.build_data_param: data:\n{self.__data_param}')
 
-        self.logger.info('Epsilon.build_data_param: end')
+        self.__logger.info('Epsilon.build_data_param: end')
