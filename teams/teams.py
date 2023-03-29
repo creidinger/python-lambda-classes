@@ -1,5 +1,4 @@
 import json
-# 3rd party
 import requests
 
 
@@ -33,35 +32,40 @@ class MsTeams:
                 "summary": "Lambda Failure!!!",
                 "sections": [
                     {
-                        "activityTitle": data["lambda_name"],
-                        "activitySubtitle":data["function_name"],
-                        "activityImage": "https://c8.alamy.com/comp/E59H30/falling-man-isolated-on-white-background-E59H30.jpg",
+                        "activityTitle": f'Lambda Name: {data["lambda_name"]}',
+                        "activitySubtitle": f'Failing Function Name: {data["function_name"]}',
+                        "activityImage": "https://cdn3.vectorstock.com/i/1000x1000/02/52/pirate-skull-icon-vector-11230252.jpg",
                         "facts": [
                             {
-                                "name": "Location",
-                                "value": data["location"]
+                                "name": "Description",
+                                "value": data["description"]
+                            },
+                            {
+                                "name": "Origin",
+                                "value": data["origin"]
+                            },
+                            {
+                                "name": "Api Domain Name",
+                                "value": data["api_domain_name"]
+                            },
+                            {
+                                "name": "Api Path",
+                                "value": data["api_path"]
+                            },
+                            {
+                                "name": "Api Method",
+                                "value": data["api_method"]
                             },
                             {
                                 "name": "Status",
                                 "value": data["status"]
                             },
                             {
-                                "name": "Description",
-                                "value": data["description"]
+                                "name": "Log Stream",
+                                "value": data["log_stream"]
                             }
                         ], "markdown": True
-                    }],
-                "potentialAction": [
-                    {
-                        "@type": "OpenUri",
-                        "name": "View Logs",
-                        "targets": [{
-                            "os": "default",
-                            "uri": data["logs_link"]
-                        }]
-                    }
-                ]
-
+                    }]
             }
 
         except Exception as e:
