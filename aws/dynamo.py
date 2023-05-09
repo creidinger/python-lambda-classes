@@ -126,17 +126,17 @@ class Dynamo:
                 "body": json.dumps({"message": "Unable to POST items."}),
             }
 
-    def dynamo_get_item(self, uid):
+    def dynamo_get_item(self, key):
         """
         get a single item from DynamoDb
         args:
-            - uid (str): The ID of the item we're looking for
+            - key (str): The Partition key of the item we're looking for
         """
 
         self.__logger.info('Dynamo.dynamo_get_item: start')
 
         try:
-            item = self.table.get_item(Key={'uid': uid})
+            item = self.table.get_item(Key={'key': key})
             self.__logger.info('Dynamo.dynamo_get_item: end.')
             return (item.get('Item'))
 
@@ -148,7 +148,7 @@ class Dynamo:
             # this will allow us to try to save the data
             return {
                 "statusCode": 500,
-                "body": json.dumps({"message": f"Unable to Get item. ID: {uid}"}),
+                "body": json.dumps({"message": f"Unable to Get item. ID: {key}"}),
             }
 
     def dynamo_put_item(self, data):
@@ -175,11 +175,11 @@ class Dynamo:
                 "body": json.dumps({"message": "Unable to PUT item."}),
             }
 
-    def dynamo_delete_item(self, uid):
+    def dynamo_delete_item(self, key):
         """
         Delete Item from DynamoDb
         args:
-            - uid (str): The ID of the item we're looking for
+            - key (str): The ID of the item we're looking for
         """
         self.__logger.info('Dynamo.dynamo_delete_item: start')
 
@@ -187,7 +187,7 @@ class Dynamo:
         # source: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html#creating-a-new-item
 
         try:
-            item = self.table.delete_item(Key={'uid': uid})
+            item = self.table.delete_item(Key={'key': key})
             self.__logger.info(f'Dynamo.dynamo_delete_item: success')
             return (item)
 
