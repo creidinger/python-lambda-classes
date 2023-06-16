@@ -126,7 +126,7 @@ class Dynamo:
                 "body": json.dumps({"message": "Unable to POST items."}),
             }
 
-    def dynamo_get_item(self, key):
+    def dynamo_get_item(self, key_name, key_value):
         """
         get a single item from DynamoDb
         args:
@@ -136,7 +136,7 @@ class Dynamo:
         self.__logger.info('Dynamo.dynamo_get_item: start')
 
         try:
-            item = self.table.get_item(Key={'key': key})
+            item = self.table.get_item(Key={key_name: key_value})
             self.__logger.info('Dynamo.dynamo_get_item: end.')
             return (item.get('Item'))
 
@@ -148,7 +148,7 @@ class Dynamo:
             # this will allow us to try to save the data
             return {
                 "statusCode": 500,
-                "body": json.dumps({"message": f"Unable to Get item. ID: {key}"}),
+                "body": json.dumps({"message": f"Unable to Get item. {key_name}: {key_value}"}),
             }
 
     def dynamo_put_item(self, data):
@@ -198,3 +198,39 @@ class Dynamo:
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to DELETE item."}),
             }
+
+    def dynamo_search(self, prefix, key): 
+        """
+        Searches for items in a DynamoDB table based on a prefix and key.
+
+        Args:
+            prefix (str): The prefix to search for.
+            key (str): The key to filter the search on.
+
+        Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/scan.html
+        """
+
+        self.__logger.info('Dynamo.dynamo_search: start')
+
+        searchFilter = {
+            'TableName': self.table.table_name,
+            'FilterExpression': f'begins_with({key}, :prefix)',
+            'ExpressionAttributeValues': {
+                ':prefix': prefix,
+            }
+        }
+
+        try:
+            response = self.table.scan(**searchFilter)
+        except Exception as e:
+            self.__logger.error(f'Dynamo.dynamo_search: {str(e)}')
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"message": "Unable to search for items."}),
+            }
+
+        items = response.get('Items', [])
+
+        self.__logger.info('Dynamo.dynamo_search: success')
+
+        return items
