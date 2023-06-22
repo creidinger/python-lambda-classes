@@ -169,13 +169,13 @@ class Dynamo:
 
         except Exception as e:
             self.__logger.error(
-                f'Dynamo.dynamo_put_item: dynamodb.table.put_item: {json.dumps(e, indent=4)}')
+                f'Dynamo.dynamo_put_item: dynamodb.table.put_item: \n\n\n{e}')
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to PUT item."}),
             }
 
-    def dynamo_delete_item(self, key):
+    def dynamo_delete_item(self, key_name, key_value):
         """
         Delete Item from DynamoDb
         args:
@@ -187,25 +187,27 @@ class Dynamo:
         # source: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html#creating-a-new-item
 
         try:
-            item = self.table.delete_item(Key={'key': key})
+            item = self.table.delete_item(Key={key_name: key_value})
             self.__logger.info(f'Dynamo.dynamo_delete_item: success')
             return (item)
 
         except Exception as e:
             self.__logger.error(
-                f'Dynamo.dynamo_delete_item: dynamodb.table.put_item: {json.dumps(e, indent=4)}')
+                f'Dynamo.dynamo_delete_item: table.delete_item: \n\n\n{e}')
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to DELETE item."}),
             }
 
-    def dynamo_search(self, prefix, key): 
+    def dynamo_search(self, prefix, key, limit, last_key):
         """
         Searches for items in a DynamoDB table based on a prefix and key.
 
         Args:
             prefix (str): The prefix to search for.
             key (str): The key to filter the search on.
+            limit (number): The number of items we want to return
+            last_key (str): The key of the last item in the list that we previously returned
 
         Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/scan.html
         """
@@ -217,8 +219,23 @@ class Dynamo:
             'FilterExpression': f'begins_with({key}, :prefix)',
             'ExpressionAttributeValues': {
                 ':prefix': prefix,
-            }
+            },
         }
+
+        # todo: Revisit Pagintaion
+        #  searchFilter = {
+        #     'TableName': self.table.table_name,
+        #     'FilterExpression': f'begins_with({key}, :prefix)',
+        #     'ExpressionAttributeValues': {
+        #         ':prefix': prefix,
+        #     },
+        #     'Limit': int(limit),
+        # }
+
+        # # When a start key is provided
+        # # add it to the search filter
+        # if last_key and last_key is not "":
+        #     searchFilter["ExclusiveStartKey"] = {'uid': last_key}
 
         try:
             response = self.table.scan(**searchFilter)
@@ -229,8 +246,6 @@ class Dynamo:
                 "body": json.dumps({"message": "Unable to search for items."}),
             }
 
-        items = response.get('Items', [])
-
         self.__logger.info('Dynamo.dynamo_search: success')
 
-        return items
+        return response
