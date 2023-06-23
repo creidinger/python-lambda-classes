@@ -130,7 +130,8 @@ class Dynamo:
         """
         get a single item from DynamoDb
         args:
-            - key (str): The Partition key of the item we're looking for
+            - key_name (str): The Partition key of the item we're looking for
+            - key_value (str): The value of the id we're looking for
         """
 
         self.__logger.info('Dynamo.dynamo_get_item: start')
@@ -199,7 +200,7 @@ class Dynamo:
                 "body": json.dumps({"message": "Unable to DELETE item."}),
             }
 
-    def dynamo_search(self, prefix, key, limit, last_key):
+    def dynamo_search(self, prefix, key_name, limit, last_key):
         """
         Searches for items in a DynamoDB table based on a prefix and key.
 
@@ -216,7 +217,7 @@ class Dynamo:
 
         searchFilter = {
             'TableName': self.table.table_name,
-            'FilterExpression': f'begins_with({key}, :prefix)',
+            'FilterExpression': f'begins_with({key_name}, :prefix)',
             'ExpressionAttributeValues': {
                 ':prefix': prefix,
             },
@@ -247,5 +248,32 @@ class Dynamo:
             }
 
         self.__logger.info('Dynamo.dynamo_search: success')
+
+        return response
+
+    def dynamo_search_duplicate(self, key_name, key_value):
+        """
+        Searches for an existing item in a DynamoDB table
+
+        Args:
+            key (str): The key to filter the search on.
+            value (str): The prefix to search for.
+
+        Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/scan.html
+        """
+
+        self.__logger.info('Dynamo.dynamo_search_duplicate: start')
+
+        try:
+            response = self.table.scan(
+                FilterExpression=Attr(key_name).eq(key_value))
+        except Exception as e:
+            self.__logger.error(f'Dynamo.dynamo_search_duplicate: {str(e)}')
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"message": "Unable to search for items."}),
+            }
+
+        self.__logger.info('Dynamo.dynamo_search_duplicate: success')
 
         return response
