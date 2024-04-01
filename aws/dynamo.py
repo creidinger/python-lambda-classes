@@ -204,15 +204,13 @@ class Dynamo:
                 "body": json.dumps({"message": "Unable to DELETE item."}),
             }
 
-    def dynamo_search(self, prefix, key_name, limit, last_key):
+    def dynamo_search(self, prefix, key_name):
         """
         Searches for items in a DynamoDB table based on a prefix and key.
 
         Args:
             prefix (str): The prefix to search for.
             key (str): The key to filter the search on.
-            limit (number): The number of items we want to return
-            last_key (str): The key of the last item in the list that we previously returned
 
         Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/scan.html
         """
@@ -226,21 +224,6 @@ class Dynamo:
                 ":prefix": prefix,
             },
         }
-
-        # todo: Revisit Pagintaion
-        #  searchFilter = {
-        #     'TableName': self.table.table_name,
-        #     'FilterExpression': f'begins_with({key}, :prefix)',
-        #     'ExpressionAttributeValues': {
-        #         ':prefix': prefix,
-        #     },
-        #     'Limit': int(limit),
-        # }
-
-        # # When a start key is provided
-        # # add it to the search filter
-        # if last_key and last_key is not "":
-        #     searchFilter["ExclusiveStartKey"] = {'uid': last_key}
 
         try:
             response = self.table.scan(**searchFilter)
@@ -256,14 +239,13 @@ class Dynamo:
         return response
 
     def dynamo_wildcard_search(self, key_name, search_value):
-        """_summary_
+        """Scan all items in the databaes and return anything that matches the search value.
 
         Args:
             key_name (str):  the name of the attribute you want to perform the wildcard search on.
             search_value (str):  the value you want to search for. You can include wildcard characters like * in this value.
-        Returns:
-            _type_: _description_
         """
+
         self.__logger.info("Dynamo.dynamo_wildcard_search: start")
 
         # The scan operation is used, which is less efficient than a
