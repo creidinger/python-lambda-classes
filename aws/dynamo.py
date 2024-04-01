@@ -1,6 +1,7 @@
 import datetime
 import uuid
 import json
+
 # 3rd party imports
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
@@ -17,13 +18,12 @@ class Dynamo:
         args:
             - logger (obj): import logger object using the singleton pattern
         """
-        self.client = boto3.resource(
-            'dynamodb')
+        self.client = boto3.resource("dynamodb")
         self.table = None
         self.__logger = logger
 
     def set_table(self, table_name):
-        """ Set the table that we want to work with
+        """Set the table that we want to work with
 
         args:
             - table_name (str): the table we're writing data to
@@ -35,17 +35,17 @@ class Dynamo:
         Get all items from the DB.
         """
 
-        self.__logger.info('Dynamo.dynamo_get_all: start')
+        self.__logger.info("Dynamo.dynamo_get_all: start")
 
         try:
             # get all items
             items = self.table.scan()
-            self.__logger.info(f'Dynamo.dynamo_get_all: success')
-            return (items.get('Items'))
+            self.__logger.info(f"Dynamo.dynamo_get_all: success")
+            return items.get("Items")
 
         except Exception as e:
             # display failure message and return failure status
-            self.__logger.error(f'Dynamo.dynamo_get_all: failed...\n\n\n {e}')
+            self.__logger.error(f"Dynamo.dynamo_get_all: failed...\n\n\n {e}")
 
             return {
                 "statusCode": 500,
@@ -59,18 +59,17 @@ class Dynamo:
             - status (str): The status we're filtering for
         """
 
-        self.__logger.info(f'Dynamo.dynamo_filter_by_status: status {status}')
+        self.__logger.info(f"Dynamo.dynamo_filter_by_status: status {status}")
 
         try:
             # get all items
-            items = self.table.scan(FilterExpression=Attr('status').eq(status))
-            self.__logger.info(f'Dynamo.dynamo_filter_by_status: success')
-            return (items.get('Items'))
+            items = self.table.scan(FilterExpression=Attr("status").eq(status))
+            self.__logger.info(f"Dynamo.dynamo_filter_by_status: success")
+            return items.get("Items")
 
         except Exception as e:
             # display failure message and return failure status
-            self.__logger.error(
-                f'Dynamo.dynamo_filter_by_status: failed...\n\n\n {e}')
+            self.__logger.error(f"Dynamo.dynamo_filter_by_status: failed...\n\n\n {e}")
 
             return {
                 "statusCode": 500,
@@ -84,19 +83,19 @@ class Dynamo:
             - status (str): The status we're filtering for
         """
 
-        self.__logger.info(
-            f'Dynamo.dynamo_filter_exclude_status: status {status}')
+        self.__logger.info(f"Dynamo.dynamo_filter_exclude_status: status {status}")
 
         try:
             # get all items
-            items = self.table.scan(FilterExpression=Attr('status').ne(status))
-            self.__logger.info(f'Dynamo.dynamo_filter_exclude_status: success')
-            return (items.get('Items'))
+            items = self.table.scan(FilterExpression=Attr("status").ne(status))
+            self.__logger.info(f"Dynamo.dynamo_filter_exclude_status: success")
+            return items.get("Items")
 
         except Exception as e:
             # display failure message and return failure status
             self.__logger.error(
-                f'Dynamo.dynamo_filter_exclude_status: failed...\n\n\n {e}')
+                f"Dynamo.dynamo_filter_exclude_status: failed...\n\n\n {e}"
+            )
 
             return {
                 "statusCode": 500,
@@ -110,16 +109,16 @@ class Dynamo:
             - data (json): the item we're adding to the db
         """
 
-        self.__logger.info('Dynamo.dynamo_post: start')
+        self.__logger.info("Dynamo.dynamo_post: start")
 
         try:
             item = self.table.put_item(Item=data)
-            self.__logger.info(f'Dynamo.dynamo_post: success')
-            return (item)
+            self.__logger.info(f"Dynamo.dynamo_post: success")
+            return item
 
         except Exception as e:
             # display failure message and return failure status
-            self.__logger.error(f'Dynamo.dynamo_post: failed...\n\n\n {e}')
+            self.__logger.error(f"Dynamo.dynamo_post: failed...\n\n\n {e}")
 
             return {
                 "statusCode": 500,
@@ -134,22 +133,25 @@ class Dynamo:
             - key_value (str): The value of the id we're looking for
         """
 
-        self.__logger.info('Dynamo.dynamo_get_item: start')
+        self.__logger.info("Dynamo.dynamo_get_item: start")
 
         try:
             item = self.table.get_item(Key={key_name: key_value})
-            self.__logger.info('Dynamo.dynamo_get_item: end.')
-            return (item.get('Item'))
+            self.__logger.info("Dynamo.dynamo_get_item: end.")
+            return item.get("Item")
 
         except Exception as e:
             self.__logger.error(
-                f'Dynamo.dynamo_get_item: Unable to table.get_item() \n\n\n{e}')
+                f"Dynamo.dynamo_get_item: Unable to table.get_item() \n\n\n{e}"
+            )
 
             # return empty if error
             # this will allow us to try to save the data
             return {
                 "statusCode": 500,
-                "body": json.dumps({"message": f"Unable to Get item. {key_name}: {key_value}"}),
+                "body": json.dumps(
+                    {"message": f"Unable to Get item. {key_name}: {key_value}"}
+                ),
             }
 
     def dynamo_put_item(self, data):
@@ -158,19 +160,20 @@ class Dynamo:
         args:
             - data (json): the data received by the lambda function
         """
-        self.__logger.info('Dynamo.dynamo_put_item: start')
+        self.__logger.info("Dynamo.dynamo_put_item: start")
 
         # create a new item (row)
         # source: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html#creating-a-new-item
 
         try:
             item = self.table.put_item(Item=data)
-            self.__logger.info(f'Dynamo.dynamo_put_item: success')
-            return (item)
+            self.__logger.info(f"Dynamo.dynamo_put_item: success")
+            return item
 
         except Exception as e:
             self.__logger.error(
-                f'Dynamo.dynamo_put_item: dynamodb.table.put_item: \n\n\n{e}')
+                f"Dynamo.dynamo_put_item: dynamodb.table.put_item: \n\n\n{e}"
+            )
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to PUT item."}),
@@ -182,19 +185,20 @@ class Dynamo:
         args:
             - key (str): The ID of the item we're looking for
         """
-        self.__logger.info('Dynamo.dynamo_delete_item: start')
+        self.__logger.info("Dynamo.dynamo_delete_item: start")
 
         # create a new item (row)
         # source: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/dynamodb.html#creating-a-new-item
 
         try:
             item = self.table.delete_item(Key={key_name: key_value})
-            self.__logger.info(f'Dynamo.dynamo_delete_item: success')
-            return (item)
+            self.__logger.info(f"Dynamo.dynamo_delete_item: success")
+            return item
 
         except Exception as e:
             self.__logger.error(
-                f'Dynamo.dynamo_delete_item: table.delete_item: \n\n\n{e}')
+                f"Dynamo.dynamo_delete_item: table.delete_item: \n\n\n{e}"
+            )
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to DELETE item."}),
@@ -213,13 +217,13 @@ class Dynamo:
         Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/scan.html
         """
 
-        self.__logger.info('Dynamo.dynamo_search: start')
+        self.__logger.info("Dynamo.dynamo_search: start")
 
         searchFilter = {
-            'TableName': self.table.table_name,
-            'FilterExpression': f'begins_with({key_name}, :prefix)',
-            'ExpressionAttributeValues': {
-                ':prefix': prefix,
+            "TableName": self.table.table_name,
+            "FilterExpression": f"begins_with({key_name}, :prefix)",
+            "ExpressionAttributeValues": {
+                ":prefix": prefix,
             },
         }
 
@@ -241,13 +245,43 @@ class Dynamo:
         try:
             response = self.table.scan(**searchFilter)
         except Exception as e:
-            self.__logger.error(f'Dynamo.dynamo_search: {str(e)}')
+            self.__logger.error(f"Dynamo.dynamo_search: {str(e)}")
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to search for items."}),
             }
 
-        self.__logger.info('Dynamo.dynamo_search: success')
+        self.__logger.info("Dynamo.dynamo_search: success")
+
+        return response
+
+    def dynamo_wildcard_search(self, key_name, search_value):
+        """_summary_
+
+        Args:
+            key_name (str):  the name of the attribute you want to perform the wildcard search on.
+            search_value (str):  the value you want to search for. You can include wildcard characters like * in this value.
+        Returns:
+            _type_: _description_
+        """
+        self.__logger.info("Dynamo.dynamo_wildcard_search: start")
+
+        # The scan operation is used, which is less efficient than a
+        # query but necessary for wildcard searches in DynamoDB.
+
+        try:
+            response = self.table.scan(
+                FilterExpression=f"contains({key_name}, :search)",  # The contains() function checks if the attribute contains the specified value.
+                ExpressionAttributeValues={":search": search_value},
+            )
+        except Exception as e:
+            self.__logger.error(f"Dynamo.dynamo_wildcard_search: {str(e)}")
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"message": "Unable to search for items."}),
+            }
+
+        self.__logger.info("Dynamo.dynamo_wildcard_search: end")
 
         return response
 
@@ -262,18 +296,17 @@ class Dynamo:
         Docs: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/scan.html
         """
 
-        self.__logger.info('Dynamo.dynamo_search_duplicate: start')
+        self.__logger.info("Dynamo.dynamo_search_duplicate: start")
 
         try:
-            response = self.table.scan(
-                FilterExpression=Attr(key_name).eq(key_value))
+            response = self.table.scan(FilterExpression=Attr(key_name).eq(key_value))
         except Exception as e:
-            self.__logger.error(f'Dynamo.dynamo_search_duplicate: {str(e)}')
+            self.__logger.error(f"Dynamo.dynamo_search_duplicate: {str(e)}")
             return {
                 "statusCode": 500,
                 "body": json.dumps({"message": "Unable to search for items."}),
             }
 
-        self.__logger.info('Dynamo.dynamo_search_duplicate: success')
+        self.__logger.info("Dynamo.dynamo_search_duplicate: success")
 
         return response

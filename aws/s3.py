@@ -1,4 +1,5 @@
 import os
+
 # 3rd part imports
 import boto3
 from botocore.exceptions import ClientError
@@ -27,12 +28,11 @@ class S3:
             - region_name (str): The region we want to change too
         """
 
-        self.__logger.info('S3.set_region: start')
+        self.__logger.info("S3.set_region: start")
 
         self.region_name = region_name
 
-        self.__logger.info(
-            f'S3.set_region: end - using region {self.region_name}')
+        self.__logger.info(f"S3.set_region: end - using region {self.region_name}")
 
     def set_s3_client(self, ACCESS_KEY, SECRET):
         """Init the s3 client
@@ -42,16 +42,17 @@ class S3:
             SECRET (str): The secret key for this bucket
         """
 
-        self.__logger.info('S3.set_s3_client: start')
+        self.__logger.info("S3.set_s3_client: start")
 
         try:
             self.client = boto3.client(
-                's3', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET)
+                "s3", aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET
+            )
 
         except Exception as e:
-            self.__logger.error(f'S3.set_s3_client: {e}')
+            self.__logger.error(f"S3.set_s3_client: {e}")
 
-        self.__logger.info('S3.set_s3_client: end')
+        self.__logger.info("S3.set_s3_client: end")
 
     def upload_to_butcket(self, file_name, bucket, object_name):
         """Upload an object to a bucket
@@ -71,9 +72,8 @@ class S3:
             response = self.client.upload_file(file_name, bucket, object_name)
 
         except ClientError as e:
-            self.__logger.error(
-                f'upload_to_s3: S3 upload failed \n{e}')
-            self.__logger.error('upload_to_s3: Exit')
+            self.__logger.error(f"upload_to_s3: S3 upload failed \n{e}")
+            self.__logger.error("upload_to_s3: Exit")
             return False
 
         self.__logger.info("S3.upload_to_butcket: Success - end...")
